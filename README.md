@@ -1,5 +1,7 @@
 # MERN Authentication App
 
+Built a MERN authentication system with image upload using Cloudinary, JWT-based authentication, and MongoDB database.
+
 ## Features
 - User Signup/Login
 - Image Upload with Cloudinary
