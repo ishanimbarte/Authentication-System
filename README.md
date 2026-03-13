@@ -10,7 +10,7 @@
 
 1. Clone the repository
 
-git clone https://github.com/yourusername/project-name
+git clone (https://github.com/ishanimbarte/Authentication-System.git)
 
 2. Install dependencies
 
