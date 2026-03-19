@@ -36,17 +36,29 @@ function Signup() {
   formData.append("name", name);
   formData.append("email", email);
   formData.append("password", password);
-  formData.append("image", image);
+  formData.append("image", imageFile);
 
-  const res = await fetch("http://localhost:5000/api/auth/signup", {
-    method: "POST",
-    body: formData
-  });
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/signup", {
+      method: "POST",
+      body: formData
+    });
 
-  const data = await res.json();
-  console.log(data);
-  alert("Signup successful");
-  navigate("/login");
+    const data = await res.json();
+
+    if (!res.ok) {
+      // ❌ ERROR CASE → show popup
+      alert(data.message);
+      return;
+    }
+
+    // ✅ SUCCESS
+    alert("Signup successful");
+    navigate("/login");
+
+  } catch (error) {
+    alert("Something went wrong");
+  }
 };
 
   return (
@@ -125,7 +137,8 @@ function Signup() {
               type="file"
               accept="image/*"
               required
-              onChange={(e) => setImage(e.target.files[0])}
+              // onChange={(e) => setImage(e.target.files[0])}
+              onChange={handleImage}
               className="w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4
               file:rounded-lg file:border-0 file:text-sm file:font-semibold
               file:bg-indigo-600 file:text-white hover:file:bg-indigo-700"

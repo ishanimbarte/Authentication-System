@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js";
+import vaultRoutes from "./routes/vaultRoutes.js";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/vault", vaultRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is working");
@@ -31,4 +33,5 @@ mongoose.connect(process.env.MONGO_URI) // ✅ remove useNewUrlParser & useUnifi
   .catch(err => console.log(err));
 
 const PORT = process.env.PORT || 5000;
+console.log("JWT SECRET:", process.env.JWT_SECRET);
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

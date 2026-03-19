@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 
 function Login() {
@@ -9,45 +10,45 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [userImage, setUserImage] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
   e.preventDefault();
 
   try {
-
     const response = await fetch("http://localhost:5000/api/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        email,
-        password
-      })
+      body: JSON.stringify({ email, password })
     });
 
-    const data = await response.json();
+    const data = await response.json(); // ✅ MUST be here first
 
-    console.log(data);
-
-    // check if login failed
     if (!response.ok) {
       alert(data.message || "Login failed");
       return;
     }
 
-    // save token
+    // ✅ Save user data
+    localStorage.setItem("userId", data.user._id);
     localStorage.setItem("token", data.token);
-
-    // set user image
-    if (data.user?.image) {
-      setUserImage(data.user.image);
-    }
+    localStorage.setItem("email", data.user.email);
 
     alert("Login successful");
 
+    // 👇 NEXT LOGIC (IMPORTANT)
+    if (data.user.pin) {
+      navigate("/enter-pin"); // already has PIN
+    } else {
+      navigate("/set-pin"); // first time
+    }
+
   } catch (error) {
-    console.log(error);
+    console.log("Network error:", error);
+    alert("Something went wrong");
   }
 };
 
@@ -115,7 +116,7 @@ function Login() {
             type="submit"
             className="w-full py-2.5 rounded-lg text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg"
           >
-            Sign In
+            LogIn
           </motion.button>
 
           {/* Divider */}
@@ -137,7 +138,7 @@ function Login() {
           <p className="text-center text-gray-400 text-sm">
             Don't have an account?{" "}
             <Link
-              to="/"
+              to="/signup"
               className="text-indigo-400 hover:text-indigo-300 font-medium"
             >
               Signup
@@ -156,6 +157,17 @@ function Login() {
               className="w-20 h-20 rounded-full border-2 border-indigo-500 object-cover"
             />
           </div>
+        )}
+
+        {isLoggedIn && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate("/set-pin")}
+            className="mt-5 w-full py-2.5 rounded-lg text-white font-semibold bg-gradient-to-r from-pink-500 to-purple-600 shadow-lg"
+          >
+            Set Your Secret PIN 🔐
+          </motion.button>
         )}
 
       </motion.div>
